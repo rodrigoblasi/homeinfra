@@ -6,7 +6,7 @@
 **Be free to suggest improvements**
 
   
-## Using Docker for: ![docker_logo](https://brandslogos.com/wp-content/uploads/images/docker-logo.png)
+## Using Docker for: ![docker_logo](https://brandslogos.com/wp-content/uploads/images/docker-logo.png = 100x100)
 - Sonarr *(series download)*
 - Radarr *(movies downoad)*
 - Jackett *(search indexer for Sonnar and Radarr)*
