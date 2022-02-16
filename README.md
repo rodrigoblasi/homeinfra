@@ -6,7 +6,7 @@
 **Be free to suggest improvements**
 
   
-## Using Docker for: <img src="https://brandslogos.com/wp-content/uploads/images/docker-logo.png" width="48">
+## Docker <img src="https://icon-icons.com/downloadimage.php?id=130643&root=2107/PNG/128/&file=file_type_docker_icon_130643.png" height="128" width="128">
 - Sonarr *(series download)*
 - Radarr *(movies downoad)*
 - Jackett *(search indexer for Sonnar and Radarr)*
@@ -17,5 +17,18 @@
   
 
 ## Usefull commands
+up all containers
 
     docker-compose up
+
+pull latest images
+
+    docker-compose pull
+
+restart containers
+
+    docker-compose up -d --remove-orphans
+
+remove obsolete images
+
+    docker image prune
