@@ -1,37 +1,8 @@
 version: "2.1"
 services: 
-  sonarr:
-    image: ghcr.io/linuxserver/sonarr:latest
-    container_name: sonarr
-    environment:
-      - PUID=0
-      - PGID=0
-      - TZ=America/Sao_Paulo
-    volumes:
-      - /srv/docker_appdata/sonarr:/config
-      - /srv/noncriticaldata:/noncriticaldata
-    logging:
-      driver: json-file
-    network_mode: bridge
-    ports:
-      - 8989:8989
-    restart: unless-stopped
-  radarr:
-    image: ghcr.io/linuxserver/radarr:latest
-    container_name: radarr
-    environment:
-      - PUID=0
-      - PGID=0
-      - TZ=America/Sao_Paulo
-    volumes:
-      - /srv/docker_appdata/radarr:/config
-      - /srv/noncriticaldata:/noncriticaldata
-    logging:
-      driver: json-file
-    network_mode: bridge
-    ports:
-      - 7878:7878
-    restart: unless-stopped
+#up order: jackett, Deluge, sonnar, radarr, goStatic
+
+#Jackett container settings
   jackett:
     image: lscr.io/linuxserver/jackett:latest
     container_name: jackett
@@ -49,6 +20,8 @@ services:
     ports:
       - 9117:9117
     restart: unless-stopped
+
+#Deluge container settings
   deluge:
     image: ghcr.io/linuxserver/deluge:latest
     container_name: deluge
@@ -68,11 +41,63 @@ services:
       - 6881:6881
       - 6881:6881/udp
     restart: unless-stopped
+    depends_on:
+      - jackett
+
+#Sonarr container settings
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /srv/docker_appdata/sonarr:/config
+      - /srv/noncriticaldata:/noncriticaldata
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    depends_on:
+      - jackett
+      - deluge
+
+#Radarr container settings
+  radarr:
+    image: ghcr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /srv/docker_appdata/radarr:/config
+      - /srv/noncriticaldata:/noncriticaldata
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    depends_on:
+      - jackett
+      - deluge
+      - sonarr
+
   goStatic:
     image: pierrezemb/gostatic:latest
+    container_name: goStatic
     volumes:
       - /srv/noncriticaldata/webfileserver:/srv/http
     network_mode: bridge
     ports:
       - "9090:8043"
     restart: unless-stopped
+    depends_on:
+      - jackett
+      - deluge
+      - sonarr
+      - radarr
