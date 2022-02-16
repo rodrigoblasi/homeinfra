@@ -1,0 +1,78 @@
+version: "2.1"
+services: 
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /srv/docker_appdata/sonarr:/config
+      - /srv/noncriticaldata:/noncriticaldata
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+  radarr:
+    image: ghcr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /srv/docker_appdata/radarr:/config
+      - /srv/noncriticaldata:/noncriticaldata
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      - AUTO_UPDATE=true
+    volumes:
+      - /srv/docker_appdata/jackett:/config
+      - /srv/noncriticaldata:/noncriticaldata
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+  deluge:
+    image: ghcr.io/linuxserver/deluge:latest
+    container_name: deluge
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+      - DELUGE_LOGLEVEL=error
+    volumes:
+      - /srv/docker_appdata/deluge:/config
+      - /srv/noncriticaldata:/noncriticaldata
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 8112:8112
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+  goStatic:
+    image: pierrezemb/gostatic:latest
+    volumes:
+      - /srv/noncriticaldata/webfileserver:/srv/http
+    network_mode: bridge
+    ports:
+      - "9090:8043"
+    restart: unless-stopped
