@@ -1,6 +1,6 @@
 version: "2.1"
 services: 
-#up order: jackett, Deluge, sonnar, radarr, goStatic
+#up order: jackett, Deluge, sonnar, radarr, goStatic, mariaDB, wordpress
 
 #Jackett container settings
   jackett:
@@ -86,7 +86,7 @@ services:
       - jackett
       - deluge
       - sonarr
-
+#goStatic container configuration
   goStatic:
     image: pierrezemb/gostatic:latest
     container_name: goStatic
@@ -101,3 +101,52 @@ services:
       - deluge
       - sonarr
       - radarr
+
+#mariadb  for wordpress container configuration
+  mariadb:
+    image: docker.io/bitnami/mariadb:10.3
+    container_name: mariadb
+    volumes:
+      - '/srv/docker_appdata/mariadb_data:/bitnami/mariadb'
+    environment:
+      - MARIADB_USER=bn_wordpress
+#plain text password is bad! is there another way?
+      - MARIADB_ROOT_PASSWORD=lC9ReQnsRJiT4i2yME5k
+#plain text password is bad! is there another way?
+      - MARIADB_PASSWORD=56vjsOwe2cjAXbQpiet1
+      - MARIADB_DATABASE=bitnami_wordpress
+    depends_on:
+      - jackett
+      - deluge
+      - sonarr
+      - radarr
+      - goStatic
+
+#wordpress+nginx container configuration
+  wordpress:
+    container_name: wordpress
+    image: docker.io/bitnami/wordpress-nginx:5
+    ports:
+      - '80:8080'
+      - '443:8443'
+    volumes:
+      - '/srv/docker_appdata/wordpress_data:/bitnami/wordpress'
+    environment:
+      - WORDPRESS_DATABASE_HOST=mariadb
+      - WORDPRESS_DATABASE_PORT_NUMBER=3306
+      - WORDPRESS_DATABASE_USER=bn_wordpress
+#plain text password is bad! is there another way?
+      - WORDPRESS_DATABASE_PASSWORD=56vjsOwe2cjAXbQpiet1
+      - WORDPRESS_DATABASE_NAME=bitnami_wordpress
+    depends_on:
+      - mariadb
+      - jackett
+      - deluge
+      - sonarr
+      - radarr
+      - goStatic
+volumes:
+  mariadb_data:
+    driver: local
+  wordpress_data:
+    driver: local

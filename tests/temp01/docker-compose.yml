@@ -1,3 +1,5 @@
+#fileserver attempt, i will try again other day!
+
 version: "2.1"
 services: 
   samba:
