@@ -12,7 +12,7 @@ services:
       - TZ=America/Sao_Paulo
       - AUTO_UPDATE=true
     volumes:
-      - /srv/docker_appdata/jackett:/config
+      - /srv/docker_appdata/jackett_dev:/config
       - /srv/noncriticaldata:/noncriticaldata
     logging:
       driver: json-file
@@ -31,7 +31,7 @@ services:
       - TZ=America/Sao_Paulo
       - DELUGE_LOGLEVEL=error
     volumes:
-      - /srv/docker_appdata/deluge:/config
+      - /srv/docker_appdata/deluge_dev:/config
       - /srv/noncriticaldata:/noncriticaldata
     logging:
       driver: json-file
@@ -53,7 +53,7 @@ services:
       - PGID=0
       - TZ=America/Sao_Paulo
     volumes:
-      - /srv/docker_appdata/sonarr:/config
+      - /srv/docker_appdata/sonarr_dev:/config
       - /srv/noncriticaldata:/noncriticaldata
     logging:
       driver: json-file
@@ -74,7 +74,7 @@ services:
       - PGID=0
       - TZ=America/Sao_Paulo
     volumes:
-      - /srv/docker_appdata/radarr:/config
+      - /srv/docker_appdata/radarr_dev:/config
       - /srv/noncriticaldata:/noncriticaldata
     logging:
       driver: json-file
