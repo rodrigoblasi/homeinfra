@@ -1,37 +1,152 @@
-#fileserver attempt, i will try again other day!
-
 version: "2.1"
 services: 
-  samba:
-    image: dperson/samba
-    container_name: samba
-    volumes:
-      - /srv/noncriticaldata:/shares/noncriticaldata:z
-      - /srv/criticaldata:/shares/criticaldata:z
+#up order: jackett, Deluge, sonnar, radarr, goStatic, mariaDB, wordpress
+
+#Jackett container settings
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett
     environment:
-      - SAMBA_LOG_LEVEL=5
-      - TZ= 'America/Sao_Paulo'
-    read_only: false
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      - AUTO_UPDATE=true
+    volumes:
+      - /srv/docker_appdata/jackett_dev:/config
+      - /srv/noncriticaldata:/noncriticaldata
+    logging:
+      driver: json-file
     network_mode: bridge
     ports:
-      - "137:137/udp"
-      - "138:138/udp"
-      - "139:139/tcp"
-      - "445:445/tcp"
-    command: >
-      -w "WORKGROUP"
-      -u "guestacc;guestacc"
-      -s "NonCriticalData;/shares/noncriticaldata"
-      -p
-      -S
-      -n
-      -r
-      -G "NonCriticalData;force user = root"
-      -G "NonCriticalData;force group = root"
-      -G "NonCriticalData;force directory mode = 0777"
-      -G "NonCriticalData;force create mode = 0777"
-      -G "NonCriticalData;writeable = yes"
-      -G "NonCriticalData;read only = no"
-      -G "NonCriticalData;guest ok = yes"
-      -G "NonCriticalData;guest only = yes"
+      - 9117:9117
     restart: unless-stopped
+
+#Deluge container settings
+  deluge:
+    image: ghcr.io/linuxserver/deluge:latest
+    container_name: deluge
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+      - DELUGE_LOGLEVEL=error
+    volumes:
+      - /srv/docker_appdata/deluge_dev:/config
+      - /srv/noncriticaldata:/noncriticaldata
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 8112:8112
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+    depends_on:
+      - jackett
+
+#Sonarr container settings
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /srv/docker_appdata/sonarr_dev:/config
+      - /srv/noncriticaldata:/noncriticaldata
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    depends_on:
+      - jackett
+      - deluge
+
+#Radarr container settings
+  radarr:
+    image: ghcr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+    volumes:
+      - /srv/docker_appdata/radarr_dev:/config
+      - /srv/noncriticaldata:/noncriticaldata
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    depends_on:
+      - jackett
+      - deluge
+      - sonarr
+#goStatic container configuration
+  goStatic:
+    image: pierrezemb/gostatic:latest
+    container_name: goStatic
+    volumes:
+      - /srv/noncriticaldata/webfileserver:/srv/http
+    network_mode: bridge
+    ports:
+      - "9090:8043"
+    restart: unless-stopped
+    depends_on:
+      - jackett
+      - deluge
+      - sonarr
+      - radarr
+
+#mariadb  for wordpress container configuration
+  mariadb:
+    image: docker.io/bitnami/mariadb:10.3
+    container_name: mariadb
+    volumes:
+      - '/srv/docker_appdata/mariadb_data:/bitnami/mariadb'
+    environment:
+      - MARIADB_USER=bn_wordpress
+#plain text password is bad! is there another way?
+      - MARIADB_ROOT_PASSWORD=lC9ReQnsRJiT4i2yME5k
+#plain text password is bad! is there another way?
+      - MARIADB_PASSWORD=56vjsOwe2cjAXbQpiet1
+      - MARIADB_DATABASE=bitnami_wordpress
+    depends_on:
+      - jackett
+      - deluge
+      - sonarr
+      - radarr
+      - goStatic
+
+#wordpress+nginx container configuration
+  wordpress:
+    container_name: wordpress
+    image: docker.io/bitnami/wordpress-nginx:5
+    ports:
+      - '80:8080'
+      - '443:8443'
+    volumes:
+      - '/srv/docker_appdata/wordpress_data:/bitnami/wordpress'
+    environment:
+      - WORDPRESS_DATABASE_HOST=mariadb
+      - WORDPRESS_DATABASE_PORT_NUMBER=3306
+      - WORDPRESS_DATABASE_USER=bn_wordpress
+#plain text password is bad! is there another way?
+      - WORDPRESS_DATABASE_PASSWORD=56vjsOwe2cjAXbQpiet1
+      - WORDPRESS_DATABASE_NAME=bitnami_wordpress
+    depends_on:
+      - mariadb
+      - jackett
+      - deluge
+      - sonarr
+      - radarr
+      - goStatic
+volumes:
+  mariadb_data:
+    driver: local
+  wordpress_data:
+    driver: local

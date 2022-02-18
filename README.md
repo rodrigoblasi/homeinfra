@@ -35,4 +35,5 @@ remove obsolete images
     docker image prune
 
 reset mariadb and wordpress directory
+
     rm -r mariadb_data/ && mkdir mariadb_data && chown 1001:1001 mariadb_data/ && chmod 766 mariadb_data/ && rm -r wordpress_data/ && mkdir wordpress_data && chown 1001:1001 wordpress_data/ && chmod 766 wordpress_data/
