@@ -1,12 +1,117 @@
-version: "3"
-
+version: '3'
 services:
-  #mariadb  for wordpress container configuration
+
+#up order: nginx, jackett, Deluge, sonnar, radarr, mariaDB, wordpress
+
+#nginx container configuration
+  nginx:
+    container_name: $NGINX_CONTAINER_NAME
+    image: nginx:latest
+    build: .
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+     - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/webfileserver:/var/www/webfileserver'
+     - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$NGINX_CONTAINER_NAME/logs:/var/log/nginx'
+     - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$NGINX_CONTAINER_NAME/html:/var/www/html'
+
+#Jackett container settings
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: $JACKETT_CONTAINER_NAME
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Sao_Paulo
+      - AUTO_UPDATE=true
+    volumes:
+      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$JACKETT_CONTAINER_NAME:/config'
+      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA:/noncriticaldata'
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+    depends_on:
+      - $NGINX_CONTAINER_NAME
+
+#Deluge container settings
+  deluge:
+    image: ghcr.io/linuxserver/deluge:latest
+    container_name: $DELUGE_CONTAINER_NAME
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+      - DELUGE_LOGLEVEL=error
+    volumes:
+      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$DELUGE_CONTAINER_NAME:/config'
+      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA:/noncriticaldata'
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 8112:8112
+      - 6881:6881
+      - 6881:6881/udp
+    restart: unless-stopped
+    depends_on:
+      - $NGINX_CONTAINER_NAME
+      - $JACKETT_CONTAINER_NAME
+
+#Sonarr container settings
+  sonarr:
+    image: ghcr.io/linuxserver/sonarr:latest
+    container_name: $SONARR_CONTAINER_NAME
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+    volumes:
+      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$SONARR_CONTAINER_NAME:/config'
+      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA:/noncriticaldata'
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    depends_on:
+      - $NGINX_CONTAINER_NAME
+      - $JACKETT_CONTAINER_NAME
+      - $DELUGE_CONTAINER_NAME
+
+#Radarr container settings
+  radarr:
+    image: ghcr.io/linuxserver/radarr:latest
+    container_name: $RADARR_CONTAINER_NAME
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Sao_Paulo
+    volumes:
+      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$RADARR_CONTAINER_NAME:/config'
+      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA:/noncriticaldata'
+    logging:
+      driver: json-file
+    network_mode: bridge
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    depends_on:
+      - $NGINX_CONTAINER_NAME
+      - $JACKETT_CONTAINER_NAME
+      - $DELUGE_CONTAINER_NAME
+      - $SONARR_CONTAINER_NAME
+
+#mariadb  for wordpress container configuration
   mariadb:
     image: docker.io/bitnami/mariadb:10.3
-    container_name: mariadb
+    container_name: $MARIADB_CONTAINER_NAME
     volumes:
-      - '/srv/docker_appdata/mariadb_data_dev:/bitnami/mariadb'
+      - $LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$MARIADB_CONTAINER_NAME:/bitnami/mariadb
     environment:
       - MARIADB_USER=bn_wordpress
 #plain text password is bad! is there another way?
@@ -14,16 +119,22 @@ services:
 #plain text password is bad! is there another way?
       - MARIADB_PASSWORD=56vjsOwe2cjAXbQpiet1
       - MARIADB_DATABASE=bitnami_wordpress
+    depends_on:
+      - $NGINX_CONTAINER_NAME
+      - $JACKETT_CONTAINER_NAME
+      - $DELUGE_CONTAINER_NAME
+      - $SONARR_CONTAINER_NAME
+      - $RADARR_CONTAINER_NAME
 
 #wordpress+nginx container configuration
   wordpress:
-    container_name: wordpress
+    container_name: $WORDPRESS_CONTAINER_NAME
     image: docker.io/bitnami/wordpress-nginx:5
     ports:
-      - '80:8080'
-      - '443:8443'
+      - '8080:8080'
+      - '8443:8443'
     volumes:
-      - '/srv/docker_appdata/wordpress_data_dev:/bitnami/wordpress'
+      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$WORDPRESS_CONTAINER_NAME:/bitnami/wordpress'
     environment:
       - WORDPRESS_DATABASE_HOST=mariadb
       - WORDPRESS_DATABASE_PORT_NUMBER=3306
@@ -32,8 +143,12 @@ services:
       - WORDPRESS_DATABASE_PASSWORD=56vjsOwe2cjAXbQpiet1
       - WORDPRESS_DATABASE_NAME=bitnami_wordpress
     depends_on:
-      - mariadb
-
+      - $NGINX_CONTAINER_NAME
+      - $JACKETT_CONTAINER_NAME
+      - $DELUGE_CONTAINER_NAME
+      - $SONARR_CONTAINER_NAME
+      - $RADARR_CONTAINER_NAME
+      - $MARIADB_CONTAINER_NAME
 volumes:
   mariadb_data:
     driver: local
