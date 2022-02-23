@@ -1,5 +1,5 @@
 #!/bin/bash
-LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA='/srv/docker_appdata/dev'
+LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA='/srv/docker_appdata'
 MARIADB_CONTAINER_NAME=mariadb
 WORDPRESS_CONTAINER_NAME=wordpress
 
