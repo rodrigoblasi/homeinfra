@@ -15,6 +15,7 @@ services:
      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/webfileserver:/var/www/webfileserver'
      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$NGINX_CONTAINER_NAME/logs:/var/log/nginx'
      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$NGINX_CONTAINER_NAME/html:/var/www/html'
+     - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$NGINX_CONTAINER_NAME/conf:/etc/nginx'
 
 #Jackett container settings
   jackett:
