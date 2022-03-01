@@ -13,7 +13,6 @@
 - <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Deluge_icon.png?20211223232754" height="64" width="64"> Deluge *(torrent client)*
 - <img src="https://pics.freeicons.io/uploads/icons/png/12857605331540553618-512.png" height="64" width="64"> mariaDB *(database for wordpress)*
 - <img src="https://cdn-icons-png.flaticon.com/512/174/174881.png" height="64" width="64"> WordPress+NGINX *(personal blog)*
-- goStatic *(static webfileserver)*
   
   
 
