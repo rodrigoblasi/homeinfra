@@ -11,11 +11,6 @@
 - <img src="https://raw.githubusercontent.com/Radarr/radarr.github.io/master/img/favicon.ico" height="64" width="64"> Radarr *(movies downoad)*
 - <img src="https://raw.githubusercontent.com/Jackett/Jackett/master/src/Jackett.Common/Content/favicon.ico" height="64" width="64"> Jackett *(search indexer for Sonnar and Radarr)*
 - <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Deluge_icon.png?20211223232754" height="64" width="64"> Deluge *(torrent client)*
-- <img src="https://pics.freeicons.io/uploads/icons/png/12857605331540553618-512.png" height="64" width="64"> mariaDB *(database for wordpress)*
-- <img src="https://cdn-icons-png.flaticon.com/512/174/174881.png" height="64" width="64"> WordPress+NGINX *(personal blog)*
-- goStatic *(static webfileserver)*
-  
-  
 
 ## Usefull commands
 up all containers
@@ -33,7 +28,3 @@ restart containers
 remove obsolete images
 
     docker image prune
-
-reset mariadb and wordpress directory
-
-    rm -r mariadb_data/ && mkdir mariadb_data && chown 1001:1001 mariadb_data/ && chmod 766 mariadb_data/ && rm -r wordpress_data/ && mkdir wordpress_data && chown 1001:1001 wordpress_data/ && chmod 766 wordpress_data/

@@ -1,38 +1,72 @@
-version: "2.1"
-services: 
-#up order: jackett, Deluge, sonnar, radarr, goStatic, mariaDB, wordpress
+version: '3'
+services:
+
+#up order: nginx-proxy-manager, nginx-static-web-server, jackett, Deluge, sonnar, radarr
+
+#nginx-proxy-manager container configuration
+  nginx-proxy-manager:
+    container_name: $NGINXPROXYMANAGER_CONTAINER_NAME
+    image: 'jc21/nginx-proxy-manager:latest'
+    ports:
+      - '80:80'
+      - '443:443'
+      - '81:81'
+    restart: unless-stopped
+    volumes:
+     - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/webfileserver:/var/www/webfileserver'
+     - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$NGINXPROXYMANAGER_CONTAINER_NAME:/data'
+     - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/letsencrypt:/etc/letsencrypt'
+
+#nginx-static-web-server container configuration
+  nginx-static-web-server:
+    container_name: $STATICWEBFILESERVER_CONTAINER_NAME
+    image: nginx:alpine
+    ports:
+      - '8080:80'
+    restart: unless-stopped
+    volumes:
+      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/webfileserver:/www/webfileserver/'
+      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$STATICWEBFILESERVER_CONTAINER_NAME/blasi.io:/www/blasi.io/'
+      - './nginx-static-web-server-configs/default.conf:/etc/nginx/conf.d/default.conf'
+    depends_on:
+      - $NGINXPROXYMANAGER_CONTAINER_NAME
 
 #Jackett container settings
   jackett:
     image: lscr.io/linuxserver/jackett:latest
-    container_name: jackett
+    container_name: $JACKETT_CONTAINER_NAME
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=111
+      - PGID=321
+      - UMASK=002
       - TZ=America/Sao_Paulo
       - AUTO_UPDATE=true
     volumes:
-      - /srv/docker_appdata/jackett:/config
-      - /srv/noncriticaldata:/noncriticaldata
+      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$JACKETT_CONTAINER_NAME:/config'
+      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/torrents:/noncriticaldata/torrents'
     logging:
       driver: json-file
     network_mode: bridge
     ports:
       - 9117:9117
     restart: unless-stopped
+    depends_on:
+      - $NGINXPROXYMANAGER_CONTAINER_NAME
+      - $STATICWEBFILESERVER_CONTAINER_NAME
 
 #Deluge container settings
   deluge:
     image: ghcr.io/linuxserver/deluge:latest
-    container_name: deluge
+    container_name: $DELUGE_CONTAINER_NAME
     environment:
-      - PUID=0
-      - PGID=0
+      - PUID=222
+      - PGID=321
+      - UMASK=002
       - TZ=America/Sao_Paulo
       - DELUGE_LOGLEVEL=error
     volumes:
-      - /srv/docker_appdata/deluge:/config
-      - /srv/noncriticaldata:/noncriticaldata
+      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$DELUGE_CONTAINER_NAME:/config'
+      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/torrents:/noncriticaldata/torrents'
     logging:
       driver: json-file
     network_mode: bridge
@@ -42,19 +76,22 @@ services:
       - 6881:6881/udp
     restart: unless-stopped
     depends_on:
-      - jackett
+      - $NGINXPROXYMANAGER_CONTAINER_NAME
+      - $STATICWEBFILESERVER_CONTAINER_NAME
+      - $JACKETT_CONTAINER_NAME
 
 #Sonarr container settings
   sonarr:
     image: ghcr.io/linuxserver/sonarr:latest
-    container_name: sonarr
+    container_name: $SONARR_CONTAINER_NAME
     environment:
-      - PUID=0
-      - PGID=0
+      - PUID=333
+      - PGID=321
+      - UMASK=002
       - TZ=America/Sao_Paulo
     volumes:
-      - /srv/docker_appdata/sonarr:/config
-      - /srv/noncriticaldata:/noncriticaldata
+      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$SONARR_CONTAINER_NAME:/config'
+      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA:/noncriticaldata'
     logging:
       driver: json-file
     network_mode: bridge
@@ -62,20 +99,23 @@ services:
       - 8989:8989
     restart: unless-stopped
     depends_on:
-      - jackett
-      - deluge
+      - $NGINXPROXYMANAGER_CONTAINER_NAME
+      - $STATICWEBFILESERVER_CONTAINER_NAME
+      - $JACKETT_CONTAINER_NAME
+      - $DELUGE_CONTAINER_NAME
 
 #Radarr container settings
   radarr:
     image: ghcr.io/linuxserver/radarr:latest
-    container_name: radarr
+    container_name: $RADARR_CONTAINER_NAME
     environment:
-      - PUID=0
-      - PGID=0
+      - PUID=444
+      - PGID=321
+      - UMASK=002
       - TZ=America/Sao_Paulo
     volumes:
-      - /srv/docker_appdata/radarr:/config
-      - /srv/noncriticaldata:/noncriticaldata
+      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$RADARR_CONTAINER_NAME:/config'
+      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA:/noncriticaldata'
     logging:
       driver: json-file
     network_mode: bridge
@@ -83,70 +123,8 @@ services:
       - 7878:7878
     restart: unless-stopped
     depends_on:
-      - jackett
-      - deluge
-      - sonarr
-#goStatic container configuration
-  goStatic:
-    image: pierrezemb/gostatic:latest
-    container_name: goStatic
-    volumes:
-      - /srv/noncriticaldata/webfileserver:/srv/http
-    network_mode: bridge
-    ports:
-      - "9090:8043"
-    restart: unless-stopped
-    depends_on:
-      - jackett
-      - deluge
-      - sonarr
-      - radarr
-
-#mariadb  for wordpress container configuration
-  mariadb:
-    image: docker.io/bitnami/mariadb:10.3
-    container_name: mariadb
-    volumes:
-      - '/srv/docker_appdata/mariadb_data:/bitnami/mariadb'
-    environment:
-      - MARIADB_USER=bn_wordpress
-#plain text password is bad! is there another way?
-      - MARIADB_ROOT_PASSWORD=lC9ReQnsRJiT4i2yME5k
-#plain text password is bad! is there another way?
-      - MARIADB_PASSWORD=56vjsOwe2cjAXbQpiet1
-      - MARIADB_DATABASE=bitnami_wordpress
-    depends_on:
-      - jackett
-      - deluge
-      - sonarr
-      - radarr
-      - goStatic
-
-#wordpress+nginx container configuration
-  wordpress:
-    container_name: wordpress
-    image: docker.io/bitnami/wordpress-nginx:5
-    ports:
-      - '8080:8080'
-      - '8443:8443'
-    volumes:
-      - '/srv/docker_appdata/wordpress_data:/bitnami/wordpress'
-    environment:
-      - WORDPRESS_DATABASE_HOST=mariadb
-      - WORDPRESS_DATABASE_PORT_NUMBER=3306
-      - WORDPRESS_DATABASE_USER=bn_wordpress
-#plain text password is bad! is there another way?
-      - WORDPRESS_DATABASE_PASSWORD=56vjsOwe2cjAXbQpiet1
-      - WORDPRESS_DATABASE_NAME=bitnami_wordpress
-    depends_on:
-      - mariadb
-      - jackett
-      - deluge
-      - sonarr
-      - radarr
-      - goStatic
-volumes:
-  mariadb_data:
-    driver: local
-  wordpress_data:
-    driver: local
+      - $NGINXPROXYMANAGER_CONTAINER_NAME
+      - $STATICWEBFILESERVER_CONTAINER_NAME
+      - $JACKETT_CONTAINER_NAME
+      - $DELUGE_CONTAINER_NAME
+      - $SONARR_CONTAINER_NAME

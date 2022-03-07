@@ -1,0 +1,5 @@
+03.03.2022 - reorganizado tudo!
+- removido wordpress e mariaDB afim de ter melhor desempenho em geral.. blog pessoal deve vir no futuro, por enquanto manter somente página estatica com links para redes sociais
+- criado nginx-proxy-manager para conexões SSL
+- criado container nginx simples para host de arquivos estaticos e pagina blasi.io
+- criado arquivo com variaveis
