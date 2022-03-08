@@ -1,16 +1,14 @@
 # Blasi Home Infra as Code
 
-  
+*Its a **work in progress**... That's "Infra as Code(IaC)" for my own home hosted services. This project is intended to be my lab for DevOps studies and its not adjusted yet to run on other environments besides my lab but be free to suggest improvements*
 
-*"Infra as Code" on home hosted services for my personal use.*
-**Be free to suggest improvements**
+# Docker
 
-  
-## Docker <img src="https://icon-icons.com/downloadimage.php?id=130643&root=2107/PNG/128/&file=file_type_docker_icon_130643.png" height="128" width="128">
-- <img src="https://raw.githubusercontent.com/Sonarr/sonarr.github.io/master/img/favicon.ico" height="64" width="64"> Sonarr *(series download)*
-- <img src="https://raw.githubusercontent.com/Radarr/radarr.github.io/master/img/favicon.ico" height="64" width="64"> Radarr *(movies downoad)*
-- <img src="https://raw.githubusercontent.com/Jackett/Jackett/master/src/Jackett.Common/Content/favicon.ico" height="64" width="64"> Jackett *(search indexer for Sonnar and Radarr)*
-- <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Deluge_icon.png?20211223232754" height="64" width="64"> Deluge *(torrent client)*
+| ||**Containers used on this Project** |||
+| ------------------------------- | --- | --- | --- | --- |
+| <img src="https://nginxproxymanager.com/icon.png" height="70" width="70">|<img src="https://raw.githubusercontent.com/Sonarr/sonarr.github.io/master/img/favicon.ico" height="64" width="64">|<img src="https://raw.githubusercontent.com/Radarr/radarr.github.io/master/img/favicon.ico" height="64" width="64">|<img src="https://raw.githubusercontent.com/Jackett/Jackett/master/src/Jackett.Common/Content/favicon.ico" height="64" width="64">|<img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/Deluge_icon.png?20211223232754" height="64" width="64">
+|**Nginx-proxy-manager**|**Sonarr**|**Radarr**|**Jackett**|**Deluge**|
+|*for PROXY, SSL and Static Web File Server*|*Library and organizer for Series*|*Library and organizer for Movies*|*Search indexer for Sonarr and Radarr*|*Torrent client for downloads*|
 
 ## Usefull commands
 up all containers
