@@ -1,8 +1,8 @@
 # Blasi Home Infra as Code
 
-*Its a **work in progress**... That's "Infra as Code(IaC)" for my own home hosted services. This project is intended to be my lab for DevOps studies and its not adjusted yet to run on other environments besides my lab but be free to suggest improvements*
+_Its a **work in progress**... That's "Infra as Code(IaC)" for my own home hosted services. This project is intended to be my lab for DevOps studies and its not adjusted yet to run on other environments besides my lab but be free to suggest improvements_
 
-# Docker
+# Docker containers used on this project
 
 <table style="height: 100%; width: 100%; border-style: solid; margin-left: auto; margin-right: auto;" border="0" cellspacing="0" cellpadding="0"><caption>&nbsp;</caption>
 <tbody>
@@ -34,18 +34,27 @@
 </table>
 
 ## Usefull commands
+
 up all containers
 
-    docker-compose up
+```
+docker-compose up
+```
 
 pull latest images
 
-    docker-compose pull
+```
+docker-compose pull
+```
 
 restart containers
 
-    docker-compose up -d --remove-orphans
+```
+docker-compose up -d --remove-orphans
+```
 
 remove obsolete images
 
-    docker image prune
+```
+docker image prune
+```
