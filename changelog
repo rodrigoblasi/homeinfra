@@ -1,3 +1,8 @@
+08.03.2022
+- removido NGINX e deixado somente Nginx-proxy-manager para proxy e Static Web File Server
+- atualizado readme
+- reorganizado arquivo de variaveis
+
 03.03.2022 - reorganizado tudo!
 - removido wordpress e mariaDB afim de ter melhor desempenho em geral.. blog pessoal deve vir no futuro, por enquanto manter somente página estatica com links para redes sociais
 - criado nginx-proxy-manager para conexões SSL
