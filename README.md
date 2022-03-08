@@ -10,7 +10,7 @@ _Its a **work in progress**... That's "Infra as Code(IaC)" for my own home hoste
 <td style="width: 100%; height: 18px; text-align: center;" colspan="5"><strong>Containers used on this Project</strong></td>
 </tr>
 <tr style="height: 75px; text-align: center;">
-<td style="width: 20%; height: 75px;"><a href="https://nginxproxymanager.com/" target="_blank"><img src="https://nginxproxymanager.com/icon.png" alt="" width="75" height="75" /></a></td>
+<td style="width: 20%; height: 75px; text-align: center;"><a href="https://nginxproxymanager.com/" target="_blank"><img src="https://nginxproxymanager.com/icon.png" alt="" width="75" height="75" /></a></td>
 <td style="width: 75px; height: 75px;"><a href="https://hub.docker.com/r/linuxserver/sonarr" target="_blank"><img src="https://raw.githubusercontent.com/Sonarr/sonarr.github.io/master/img/favicon.ico" alt="" width="75" height="75" /></a></td>
 <td style="width: 75px; height: 75px;"><a href="https://hub.docker.com/r/linuxserver/radarr" target="_blank"><img src="https://raw.githubusercontent.com/Radarr/radarr.github.io/master/img/favicon.ico" alt="" width="75" height="75" /></a></td>
 <td style="width: 75px; height: 75px;"><a href="https://hub.docker.com/r/linuxserver/jackett" target="_blank"><img src="https://raw.githubusercontent.com/Jackett/Jackett/master/src/Jackett.Common/Content/favicon.ico" alt="" width="75" height="75" /></a></td>
