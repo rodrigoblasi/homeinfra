@@ -13,10 +13,9 @@ services:
       - '81:81'
     restart: unless-stopped
     volumes:
-     - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/webfileserver:/www/webfileserver'
      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$NGINXPROXYMANAGER_CONTAINER_NAME:/data'
      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/letsencrypt:/etc/letsencrypt'
-     - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$STATICWEBFILESERVER_CONTAINER_NAME/blasi.io:/www/blasi.io/'
+     - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/webfileserver:/www/'
 
 #Jackett container settings
   jackett:
