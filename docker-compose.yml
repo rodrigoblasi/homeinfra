@@ -16,8 +16,8 @@ services:
      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$NGINXPROXYMANAGER_CONTAINER_NAME:/data'
      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/letsencrypt:/etc/letsencrypt'
      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/webfileserver:/www/'
-     - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/media/movies:/www/files.blasi.io/movies'
-     - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/media/series:/www/files.blasi.io/series'
+     - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/media/movies:/www/files.blasi.io/Filmes'
+     - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/media/series:/www/files.blasi.io/Series'
 
 #Jackett container settings
   jackett:
