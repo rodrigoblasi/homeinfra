@@ -15,10 +15,15 @@ services:
     volumes:
      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$NGINXPROXYMANAGER_CONTAINER_NAME:/data'
      - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/letsencrypt:/etc/letsencrypt'
-     - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/webfileserver:/www/'
+     - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/blasi.io:/www/blasi.io'
+     - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/curriculo.blasi.io:/www/curriculo.blasi.io'
      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/media/movies:/www/files.blasi.io/Filmes'
      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/media/series:/www/files.blasi.io/Series'
-
+     - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/extras:/www/files.blasi.io/extras'
+    logging:
+      driver: json-file
+    network_mode: bridge
+    
 #Jackett container settings
   jackett:
     image: lscr.io/linuxserver/jackett:latest
@@ -55,6 +60,7 @@ services:
     volumes:
       - '$LOCAL_MOUNTED_VOLUME_DOCKERAPPDATA/$DELUGE_CONTAINER_NAME:/config'
       - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/torrents:/noncriticaldata/torrents'
+      - '$LOCAL_MOUNTED_VOLUME_NONCRITICALDATA/extras:/noncriticaldata/torrents/extras'
     logging:
       driver: json-file
     network_mode: bridge
